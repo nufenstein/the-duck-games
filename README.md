@@ -2,6 +2,8 @@
 
 Welcome to **The Duck Games** – an exciting, cartoon-style Olympic competition designed especially for ducks! In this game, kids aged 7–12 can select one of 10 unique ducks, each with their own special looks and abilities, and then compete in five different mini-games to earn a spot on the podium.
 
+Give it a try here: [text](https://nufenstein.github.io/the-duck-games/)
+
 ## Game Overview
 
 **The Duck Games** is a web-based arcade collection that brings a fun twist to Olympic-style competitions—only, the competitors are adorable ducks! After choosing your duck from 10 premade options, you'll face off in five separate events. The games can be played in any order, with each event lasting about a minute. Your performance in each game adds to your overall score, and at the end, the top three players receive gold, silver, and bronze medals.
