@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>The Duck Games</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #87CEEB; /* Sky blue background */
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* Ensure the canvas is block-level so it centers horizontally */
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Load Phaser from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+  <!-- Load game scenes -->
+  <script src="js/StartScreenScene.js"></script>
+  <script src="js/DuckSelectionScene.js"></script>
+  <script src="js/GameOneScene.js"></script>
+  <script src="js/main.js"></script>  
+</body>
+</html>
