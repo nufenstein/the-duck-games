@@ -203,7 +203,7 @@ class GameOneScene extends Phaser.Scene {
     });
 
     // Create the duck sprite on the starting platform.
-    const duckScale = 0.6;
+    const duckScale = 1;
     this.duck = this.physics.add.sprite(
       this.startingPlatform.x,
       this.startingPlatform.y - this.startingPlatform.displayHeight / 2,
@@ -273,7 +273,7 @@ class GameOneScene extends Phaser.Scene {
         let edge = Phaser.Math.Between(0, 2);
         let arrow;
         // Increased scale for better visibility.
-        const arrowScale = 1;
+        const arrowScale = 1.5;
         if (edge === 0) {
           arrow = this.arrows.create(
             Phaser.Math.Between(50, viewportWidth - 50),

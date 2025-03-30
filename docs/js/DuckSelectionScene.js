@@ -47,6 +47,20 @@ class DuckSelectionScene extends Phaser.Scene {
       });
     }
 
+    // Array of silly names for the ducks.
+    const sillyNames = [
+      "Quacky McDuckface",
+      "Sir Quacksalot",
+      "Ducky Doodle",
+      "Feather Flinger",
+      "Wing Commander",
+      "Bill the Thrill",
+      "Quack Norris",
+      "Duck Vader",
+      "The Quackster",
+      "Puddle Jumper"
+    ];
+
     // Set up a 2-row, 5-column grid for the duck selection.
     let columns = 5,
       rows = 2,
@@ -74,6 +88,13 @@ class DuckSelectionScene extends Phaser.Scene {
           // Do not stop the music so it continues to play.
           this.scene.start('GameOneScene');
         });
+        // Add silly name text underneath each duck.
+        this.add.text(
+          duckSprite.x,
+          duckSprite.y + duckSprite.displayHeight / 2 + 10, // Adjust vertical offset as needed
+          sillyNames[currentDuckId - 1],
+          { fontSize: '16px', fill: '#000', fontFamily: "'Comic Neue', sans-serif" }
+        ).setOrigin(0.5, 0);
         duckId++;
       }
     }
