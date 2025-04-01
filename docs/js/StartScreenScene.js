@@ -4,25 +4,35 @@ class StartScreenScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load background image and menu music.
     this.load.image('start-bg', 'assets/images/backgrounds/selection_bg.png');
     this.load.audio('menuMusic', 'assets/audio/menu.ogg');
   }
 
   create() {
-    // Add background.
+    // Add background
     this.add.image(512, 384, 'start-bg');
 
-    // Create a big interactive button that says "Let the Games Begin".
+    // Create interactive button
     let button = this.add.text(512, 384, 'Let the Games Begin', {
       fontSize: '48px',
       fill: '#fff',
       fontFamily: "'Comic Neue', sans-serif",
       backgroundColor: '#000',
-      padding: { x: 20, y: 20 }
-    }).setOrigin(0.5).setInteractive();
+      padding: { x: 40, y: 30 } // Larger touch area
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    // Play the menu music if it's not already playing.
+    // Visual feedback on press (scaling)
+    button.on('pointerover', () => button.setStyle({ backgroundColor: '#222' }));
+    button.on('pointerout', () => button.setStyle({ backgroundColor: '#000' }));
+    button.on('pointerdown', () => {
+      button.setScale(0.95); // slight shrink on press
+    });
+    button.on('pointerup', () => {
+      button.setScale(1); // restore size
+      this.scene.start('DuckSelectionScene');
+    });
+
+    // Menu music logic
     if (!this.registry.has('menuMusic')) {
       this.music = this.sound.add('menuMusic', { loop: true });
       this.music.play();
@@ -31,11 +41,8 @@ class StartScreenScene extends Phaser.Scene {
       this.music = this.registry.get('menuMusic');
     }
 
-    // On button click, move to the duck selection scene.
-    button.on('pointerdown', () => {
-      // Do not stop the music; just switch scenes.
-      this.scene.start('DuckSelectionScene');
-    });
+    // Optional: set canvas touch behavior to avoid iOS zooming, etc.
+    this.sys.canvas.style.touchAction = 'manipulation';
   }
 }
 
