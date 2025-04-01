@@ -13,12 +13,16 @@ class DuckSelectionScene extends Phaser.Scene {
   }
 
   create() {
+    // Set up music using sound unlocking mechanism instead of pointerup
     if (!this.registry.has('menuMusic')) {
       this.music = this.sound.add('menuMusic', { loop: true });
-      // Defer audio playback until after the first user interaction (pointerup event)
-      this.input.once('pointerup', () => {
+      if (this.sound.locked) {
+        this.sound.once('unlocked', () => {
+          this.music.play();
+        });
+      } else {
         this.music.play();
-      });
+      }
       this.registry.set('menuMusic', this.music);
     } else {
       this.music = this.registry.get('menuMusic');
