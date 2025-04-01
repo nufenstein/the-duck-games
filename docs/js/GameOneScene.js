@@ -7,15 +7,16 @@ class GameOneScene extends Phaser.Scene {
     let selectedDuck = this.registry.get('selectedDuck') || 1;
     let duckFolder = 'assets/ducks/duck' + selectedDuck + '/';
 
-    this.load.image('idle1', duckFolder + 'Idle/Idle 001.png');
-    this.load.image('idle2', duckFolder + 'Idle/Idle 002.png');
-    this.load.image('walk1', duckFolder + 'Walking/Walking 001.png');
-    this.load.image('walk2', duckFolder + 'Walking/Walking 002.png');
-    this.load.image('run1', duckFolder + 'Running/Running 001.png');
-    this.load.image('run2', duckFolder + 'Running/Running 002.png');
-    this.load.image('jump1', duckFolder + 'Jumping/Jumping 001.png');
-    this.load.image('crouch1', duckFolder + 'Crouching/Crouching 001.png');
-    this.load.image('dead1', duckFolder + 'Dead/Dead 001.png');
+    // Removed spaces from file names (e.g., "Idle 001.png" becomes "Idle001.png")
+    this.load.image('idle1', duckFolder + 'Idle/Idle001.png');
+    this.load.image('idle2', duckFolder + 'Idle/Idle002.png');
+    this.load.image('walk1', duckFolder + 'Walking/Walking001.png');
+    this.load.image('walk2', duckFolder + 'Walking/Walking002.png');
+    this.load.image('run1', duckFolder + 'Running/Running001.png');
+    this.load.image('run2', duckFolder + 'Running/Running002.png');
+    this.load.image('jump1', duckFolder + 'Jumping/Jumping001.png');
+    this.load.image('crouch1', duckFolder + 'Crouching/Crouching001.png');
+    this.load.image('dead1', duckFolder + 'Dead/Dead001.png');
 
     this.load.spritesheet('arrow', 'assets/images/arrow.png', { frameWidth: 32, frameHeight: 32 });
     this.load.image('platform', 'assets/images/platform.png');
@@ -33,7 +34,10 @@ class GameOneScene extends Phaser.Scene {
     this.add.image(512, 384, 'game1-bg');
     this.sound.stopAll();
     this.music = this.sound.add('gameMusic', { loop: true });
-    this.music.play();
+    // Defer music playback until after the first user interaction (pointerup)
+    this.input.once('pointerup', () => {
+      this.music.play();
+    });
     this.physics.world.gravity.y = 600;
 
     if (!this.registry.has('startTime')) {
@@ -89,7 +93,11 @@ class GameOneScene extends Phaser.Scene {
     });
 
     // Duck
-    this.duck = this.physics.add.sprite(this.startingPlatform.x, this.startingPlatform.y - this.startingPlatform.displayHeight / 2, 'idle1')
+    this.duck = this.physics.add.sprite(
+      this.startingPlatform.x,
+      this.startingPlatform.y - this.startingPlatform.displayHeight / 2,
+      'idle1'
+    )
       .setOrigin(0.5, 1)
       .setScale(1);
     this.duck.anims.play('idle', true);
