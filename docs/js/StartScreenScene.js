@@ -27,18 +27,25 @@ class StartScreenScene extends Phaser.Scene {
     button.on('pointerdown', () => {
       button.setScale(0.95); // Slight shrink on press
     });
-    button.on('pointerup', () => {
+    
+    // Function to handle button release events
+    const onButtonRelease = () => {
       button.setScale(1); // Restore size
-
+      
       // Defer music playback until after user interaction
       if (!this.registry.has('menuMusic')) {
         this.music = this.sound.add('menuMusic', { loop: true });
         this.music.play();
         this.registry.set('menuMusic', this.music);
       }
-
+      
+      // Proceed to next scene
       this.scene.start('DuckSelectionScene');
-    });
+    };
+
+    // Trigger scene change on both pointerup and pointerupoutside events
+    button.on('pointerup', onButtonRelease);
+    button.on('pointerupoutside', onButtonRelease);
 
     // Optional: Set canvas touch behavior to avoid iOS zooming
     this.sys.canvas.style.touchAction = 'manipulation';

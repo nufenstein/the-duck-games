@@ -34,29 +34,34 @@ class GameOneScene extends Phaser.Scene {
     this.add.image(512, 384, 'game1-bg');
     this.sound.stopAll();
     this.music = this.sound.add('gameMusic', { loop: true });
-    
-    // Use Phaser's sound locking mechanism:
+    // Use Phaser's sound unlocking mechanism:
     if (this.sound.locked) {
-      // This event fires once the sound system has been unlocked via a user interaction.
       this.sound.once('unlocked', () => {
         this.music.play();
       });
     } else {
-      // If already unlocked, play immediately.
       this.music.play();
     }
-    
     this.physics.world.gravity.y = 600;
 
     if (!this.registry.has('startTime')) {
       this.registry.set('startTime', this.time.now);
     }
-
     this.startTime = this.registry.get('startTime');
     this.penaltyTime = 0;
     this.deathTimestamp = null;
 
-    // Platform setup
+    // Create animations BEFORE creating objects that use them.
+    this.anims.create({ key: 'idle', frames: [{ key: 'idle1' }, { key: 'idle2' }], frameRate: 2, repeat: -1 });
+    this.anims.create({ key: 'walk', frames: [{ key: 'walk1' }, { key: 'walk2' }], frameRate: 2, repeat: -1 });
+    this.anims.create({ key: 'run', frames: [{ key: 'run1' }, { key: 'run2' }], frameRate: 2, repeat: -1 });
+    this.anims.create({ key: 'jump', frames: [{ key: 'jump1' }], frameRate: 1 });
+    this.anims.create({ key: 'crouch', frames: [{ key: 'crouch1' }], frameRate: 1 });
+    this.anims.create({ key: 'dead', frames: [{ key: 'dead1' }], frameRate: 1 });
+    this.anims.create({ key: 'arrow_fly', frames: this.anims.generateFrameNumbers('arrow', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'gem_spin', frames: this.anims.generateFrameNumbers('gem', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+
+    // Platform setup with scale adjusted to 0.08
     const scale = 0.08;
     const num = 15;
     const bottomY = 650;
@@ -89,7 +94,7 @@ class GameOneScene extends Phaser.Scene {
 
     this.startingPlatform = this.platforms.getChildren()[0];
 
-    // Gems
+    // Create gems after the 'gem_spin' animation is defined.
     this.gems = this.physics.add.group();
     this.platforms.getChildren().forEach(p => {
       let y = p.y - p.displayHeight / 2 - 24;
@@ -100,7 +105,7 @@ class GameOneScene extends Phaser.Scene {
       this.gems.add(gem);
     });
 
-    // Duck
+    // Duck setup
     this.duck = this.physics.add.sprite(
       this.startingPlatform.x,
       this.startingPlatform.y - this.startingPlatform.displayHeight / 2,
@@ -113,16 +118,6 @@ class GameOneScene extends Phaser.Scene {
     this.duck.body.setOffset((this.duck.displayWidth - this.duck.body.width) / 2, this.duck.displayHeight - this.duck.body.height);
     this.duckSpawnTime = this.time.now;
     this.duckIsDead = false;
-
-    // Animations
-    this.anims.create({ key: 'idle', frames: [{ key: 'idle1' }, { key: 'idle2' }], frameRate: 2, repeat: -1 });
-    this.anims.create({ key: 'walk', frames: [{ key: 'walk1' }, { key: 'walk2' }], frameRate: 2, repeat: -1 });
-    this.anims.create({ key: 'run', frames: [{ key: 'run1' }, { key: 'run2' }], frameRate: 2, repeat: -1 });
-    this.anims.create({ key: 'jump', frames: [{ key: 'jump1' }], frameRate: 1 });
-    this.anims.create({ key: 'crouch', frames: [{ key: 'crouch1' }], frameRate: 1 });
-    this.anims.create({ key: 'dead', frames: [{ key: 'dead1' }], frameRate: 1 });
-    this.anims.create({ key: 'arrow_fly', frames: this.anims.generateFrameNumbers('arrow', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
-    this.anims.create({ key: 'gem_spin', frames: this.anims.generateFrameNumbers('gem', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
 
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -139,7 +134,6 @@ class GameOneScene extends Phaser.Scene {
     this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     this.touchControls = { left: false, right: false, jumpPressed: false, jumpReleased: false, downHeld: false };
     this.downHoldStart = 0;
-
     if (this.isTouchDevice) {
       const pad = 24, size = 80, h = this.sys.game.config.height, w = this.sys.game.config.width;
       this._makeButton('←', pad, h - size - pad, 'left');
@@ -155,20 +149,18 @@ class GameOneScene extends Phaser.Scene {
       callback: () => {
         if (this.time.now - this.duckSpawnTime < 3000) return;
         let edge = Phaser.Math.Between(0, 2);
-        const scale = 1.5;
+        const arrowScale = 1.5;
         let a;
-
         if (edge === 0) {
-          a = this.arrows.create(Phaser.Math.Between(50, w - 50), 0, 'arrow').setScale(scale);
+          a = this.arrows.create(Phaser.Math.Between(50, w - 50), 0, 'arrow').setScale(arrowScale);
           a.setVelocityY(Phaser.Math.Between(200, 300));
         } else {
           let y = Phaser.Math.Between(50, this.sys.game.config.height - 50);
           let x = edge === 1 ? 0 : w;
-          a = this.arrows.create(x, y, 'arrow').setScale(scale);
+          a = this.arrows.create(x, y, 'arrow').setScale(arrowScale);
           a.setVelocityX(edge === 1 ? 300 : -300);
           a.body.setGravityY(200);
         }
-
         a.anims.play('arrow_fly');
       },
       loop: true
