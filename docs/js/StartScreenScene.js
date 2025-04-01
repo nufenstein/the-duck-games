@@ -21,27 +21,26 @@ class StartScreenScene extends Phaser.Scene {
       padding: { x: 40, y: 30 } // Larger touch area
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    // Visual feedback on press (scaling)
+    // Visual feedback on pointer events
     button.on('pointerover', () => button.setStyle({ backgroundColor: '#222' }));
     button.on('pointerout', () => button.setStyle({ backgroundColor: '#000' }));
     button.on('pointerdown', () => {
-      button.setScale(0.95); // slight shrink on press
+      button.setScale(0.95); // Slight shrink on press
     });
     button.on('pointerup', () => {
-      button.setScale(1); // restore size
+      button.setScale(1); // Restore size
+
+      // Defer music playback until after user interaction
+      if (!this.registry.has('menuMusic')) {
+        this.music = this.sound.add('menuMusic', { loop: true });
+        this.music.play();
+        this.registry.set('menuMusic', this.music);
+      }
+
       this.scene.start('DuckSelectionScene');
     });
 
-    // Menu music logic
-    if (!this.registry.has('menuMusic')) {
-      this.music = this.sound.add('menuMusic', { loop: true });
-      this.music.play();
-      this.registry.set('menuMusic', this.music);
-    } else {
-      this.music = this.registry.get('menuMusic');
-    }
-
-    // Optional: set canvas touch behavior to avoid iOS zooming, etc.
+    // Optional: Set canvas touch behavior to avoid iOS zooming
     this.sys.canvas.style.touchAction = 'manipulation';
   }
 }

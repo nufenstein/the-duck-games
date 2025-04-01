@@ -34,10 +34,18 @@ class GameOneScene extends Phaser.Scene {
     this.add.image(512, 384, 'game1-bg');
     this.sound.stopAll();
     this.music = this.sound.add('gameMusic', { loop: true });
-    // Defer music playback until after the first user interaction (pointerup)
-    this.input.once('pointerup', () => {
+    
+    // Use Phaser's sound locking mechanism:
+    if (this.sound.locked) {
+      // This event fires once the sound system has been unlocked via a user interaction.
+      this.sound.once('unlocked', () => {
+        this.music.play();
+      });
+    } else {
+      // If already unlocked, play immediately.
       this.music.play();
-    });
+    }
+    
     this.physics.world.gravity.y = 600;
 
     if (!this.registry.has('startTime')) {
@@ -49,7 +57,7 @@ class GameOneScene extends Phaser.Scene {
     this.deathTimestamp = null;
 
     // Platform setup
-    const scale = 0.05;
+    const scale = 0.08;
     const num = 15;
     const bottomY = 650;
     const topY = 150;
